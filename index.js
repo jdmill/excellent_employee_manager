@@ -1,73 +1,95 @@
-const prompt = require('inquirer');
-const { init } = require('../note-taker/routes');
-const database = require("./database");
+const inquirer = require('inquirer');
+require('console.table');
+const mysql = require("mysql2");
 
+//const app = express();
+
+//This inits mySQL2
+const sqlConnect = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "root",
+  database: "employees",
+});
+
+//connects mySQL
+sqlConnect.connect(function (err) {
+  if (err) throw err;
+  console.log('Database Connected');
+});
+
+
+
+//loads the prompts at application load
+loadPrompts();
+
+//inquirer loads all prompts to console in a list 
 function loadPrompts() {
-  prompt([
+  inquirer.prompt([
     {
       type: "list",
       name: "choice",
-      message: "Choose an option",
+      message: "Choose an option. What would you like to do?",
       choices: [
         {
           name: "View Employees",
-          value: "EMPLOYEES_VIEW"
+          value: "EMPLOYEES_VIEW",
         },
         {
           name: "View Employees By Department",
-          value: "DEPARTMENT_VIEW"
+          value: "DEPARTMENT_VIEW",
         },
         {
           name: "View Employees By Manager",
-          value: "MANAGER_VIEW"
+          value: "MANAGER_VIEW",
         },
         {
           name: "Add Employee",
-          value: "ADD_EMPLOYEE"
+          value: "ADD_EMPLOYEE",
         },
         {
           name: "Remove Employee",
-          value: "RM_EMPLOYEE"
+          value: "RM_EMPLOYEE",
         },
         {
           name: "Update Employee Role",
-          value: "UPDATE_EMPLOYEE_ROLE"
+          value: "UPDATE_EMPLOYEE_ROLE",
         },
         {
           name: "Update Employee Manager",
-          value: "UPDATE_MANAGER"
-        },
-        {
-          name: "View All Roles",
-          value: "VIEW_ROLES"
-        },
-        {
-          name: "Add Role",
-          value: "ADD_ROLE"
-        },
-        {
-          name: "Remove Role",
-          value: "RM_ROLE"
+          value: "UPDATE_MANAGER",
         },
         {
           name: "View All Departments",
-          value: "VIEW_DEPARTMENTS"
+          value: "VIEW_DEPARTMENTS",
         },
         {
           name: "Add Department",
-          value: "ADD_DEPARTMENT"
+          value: "ADD_DEPARTMENT",
         },
         {
           name: "Remove Department",
-          value: "RM_DEPARTMENT"
+          value: "RM_DEPARTMENT",
+        },
+        {
+          name: "View All Roles",
+          value: "VIEW_ROLES",
+        },
+        {
+          name: "Add Role",
+          value: "ADD_ROLE",
+        },
+        {
+          name: "Remove Role",
+          value: "RM_ROLE",
         },
         {
           name: "Quit",
-          value: "QUIT"
-        }
-      ]
-    }
-  ]).then(answer => {
+          value: "QUIT",
+        },
+      ],
+    },
+  ]).then((answer) => {
     let choice = answer.choice;
     switch (choice) {
       case "EMPLOYEES_VIEW":
@@ -91,15 +113,6 @@ function loadPrompts() {
       case "UPDATE_MANAGER":
         updateManager();
         break;
-      case "VIEW_ROLES":
-        viewRoles();
-        break;
-      case "RM_ROLE":
-        removeRole();
-        break;
-      case "ADD_ROLE":
-        addRole();
-        break;
       case "VIEW_DEPARTMENTS":
         viewDepartments();
         break;
@@ -109,8 +122,41 @@ function loadPrompts() {
       case "RM_DEPARTMENT":
         removeDepartment();
         break;
+      case "VIEW_ROLES":
+        viewRoles();
+        break;
+      case "RM_ROLE":
+        removeRole();
+        break;
+      case "ADD_ROLE":
+        addRole();
+        break;
       default:
         quit();
     }
-  })
+  });
+}
+
+function viewEmployees() {
+  const result = `SELECT * FROM employees`
+  sqlConnect.query(result, (err, res) => {
+    console.table(res);
+    loadPrompts();
+  });
+}
+
+function viewRoles() {
+  const result = `SELECT * FROM roles`
+  sqlConnect.query(result, (err, res) => {
+    console.table(res);
+    loadPrompts();
+  });
+}
+
+function viewDepartments() {
+  const result = `SELECT * FROM departments`;
+  sqlConnect.query(result, (err, res) => {
+    console.table(res);
+    loadPrompts();
+  });
 }
