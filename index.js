@@ -9,11 +9,11 @@ const sqlConnect = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "root",
-  database: "employees",
+  database: "employees_db",
 });
 
 //connects mySQL
-sqlConnect.connect(function (err) {
+sqlConnect.connect((err) => {
   if (err) throw err;
   console.log('Database Connected');
 });
@@ -96,7 +96,7 @@ function loadPrompts() {
         viewEmployees();
         break;
       case "DEPARTMENT_VIEW":
-        viewDepartment();
+        viewDepartments();
         break;
       case "MANAGER_VIEW":
         viewByManager();
@@ -138,7 +138,7 @@ function loadPrompts() {
 }
 
 function viewEmployees() {
-  const result = `SELECT * FROM employees`
+  const result = `SELECT * FROM employees;`
   sqlConnect.query(result, (err, res) => {
     console.table(res);
     loadPrompts();
@@ -146,7 +146,7 @@ function viewEmployees() {
 }
 
 function viewRoles() {
-  const result = `SELECT * FROM roles`
+  const result = `SELECT * FROM roles;`
   sqlConnect.query(result, (err, res) => {
     console.table(res);
     loadPrompts();
@@ -154,7 +154,15 @@ function viewRoles() {
 }
 
 function viewDepartments() {
-  const result = `SELECT * FROM departments`;
+  const result = `SELECT * FROM departments;`
+  sqlConnect.query(result, (err, res) => {
+    console.table(res);
+    loadPrompts();
+  });
+}
+
+function viewByManager() {
+  const result = `SELECT * FROM manager_id`
   sqlConnect.query(result, (err, res) => {
     console.table(res);
     loadPrompts();
